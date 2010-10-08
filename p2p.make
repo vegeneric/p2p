@@ -9,7 +9,12 @@ projects[admin_menu][subdir] = "contrib"
 
 projects[cck][subdir] = "contrib"
 
+projects[filefield][subdir] = "contrib"
+
+projects[imagefield][subdir] = "contrib"
+
 projects[autoassignrole][subdir] = "contrib"
+projects[autoassignrole][version] = 1.x-dev
 
 projects[content_profile][subdir] = "contrib"
 
