@@ -20,7 +20,7 @@ projects[diff][subdir] = "contrib"
 projects[features][subdir] = "contrib"
 
 projects[flag][subdir] = "contrib"
-projects[flag][revision] = 2.0
+projects[flag][version] = 2.0-beta3
 
 projects[jquery_ui][subdir] = "contrib"
 
