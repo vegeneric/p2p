@@ -116,7 +116,7 @@ function person_to_person_content_default_fields() {
       'profile' => 0,
       'story' => 0,
     ),
-    'advanced_view' => '--',
+    'advanced_view' => 'potential_hosts',
     'advanced_view_args' => '',
     'widget' => array(
       'autocomplete_match' => 'contains',
@@ -1748,7 +1748,8 @@ Other',
     'active' => '1',
     'text_processing' => '0',
     'max_length' => '',
-    'allowed_values' => '',
+    'allowed_values' => '0
+1|Admin Final Confirmation',
     'allowed_values_php' => '',
     'widget' => array(
       'default_value' => array(
@@ -1799,12 +1800,13 @@ Other',
     'active' => '1',
     'text_processing' => '0',
     'max_length' => '',
-    'allowed_values' => '',
+    'allowed_values' => '0
+1|Guest Final Confirmation',
     'allowed_values_php' => '',
     'widget' => array(
       'default_value' => array(
         '0' => array(
-          'value' => NULL,
+          'value' => 0,
         ),
       ),
       'default_value_php' => NULL,
@@ -1850,7 +1852,8 @@ Other',
     'active' => '1',
     'text_processing' => '0',
     'max_length' => '',
-    'allowed_values' => '',
+    'allowed_values' => '0
+1|Host Final Confirmation',
     'allowed_values_php' => '',
     'widget' => array(
       'default_value' => array(
@@ -1977,7 +1980,7 @@ Other',
       'profile' => 0,
       'story' => 0,
     ),
-    'advanced_view' => '--',
+    'advanced_view' => 'potential_hosts',
     'advanced_view_args' => '',
     'widget' => array(
       'autocomplete_match' => 'contains',

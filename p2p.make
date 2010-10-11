@@ -10,7 +10,6 @@ projects[admin_menu][subdir] = "contrib"
 projects[cck][subdir] = "contrib"
 
 projects[filefield][subdir] = "contrib"
-
 projects[imagefield][subdir] = "contrib"
 
 projects[autoassignrole][subdir] = "contrib"
@@ -39,3 +38,4 @@ projects[person_to_person][type] = module
 projects[person_to_person][download][type] = git
 projects[person_to_person][download][url] = https://vegeneric@github.com/vegeneric/p2p.git
 projects[person_to_person][subdir] = "custom"
+

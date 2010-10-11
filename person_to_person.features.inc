@@ -37,7 +37,7 @@ $flags[] = array (
   'show_on_page' => 1,
   'show_on_teaser' => 1,
   'show_on_form' => 0,
-  'access_author' => 'others',
+  'access_author' => '',
   'i18n' => 0,
   'module' => 'person_to_person',
   'locked' => 
@@ -124,12 +124,12 @@ function person_to_person_rules_defaults() {
       'person_to_person_1' => array(
         '#type' => 'rule',
         '#set' => 'event_node_insert',
-        '#label' => 'Guest creation notifications',
+        '#label' => 'Guest creation',
         '#active' => 1,
         '#weight' => '0',
         '#categories' => array(
           '0' => 'person-to-person',
-          'person_to_person' => 'person_to_person',
+          '1' => 'person_to_person',
         ),
         '#status' => 'default',
         '#conditions' => array(
@@ -215,6 +215,31 @@ function person_to_person_rules_defaults() {
             ),
             '#weight' => 0,
           ),
+          '2' => array(
+            '#type' => 'action',
+            '#settings' => array(
+              '#argument map' => array(
+                'node' => 'node',
+                'user' => 'author',
+              ),
+            ),
+            '#name' => 'p2p_rules_action_flag_potential_hosts',
+            '#info' => array(
+              'label' => 'Flag potential hosts',
+              'arguments' => array(
+                'node' => array(
+                  'label' => 'Guest Node',
+                  'type' => 'node',
+                ),
+                'user' => array(
+                  'label' => 'Guest',
+                  'type' => 'user',
+                ),
+              ),
+              'module' => 'p2p',
+            ),
+            '#weight' => 0,
+          ),
         ),
         '#version' => 6003,
       ),
@@ -231,16 +256,7 @@ function person_to_person_rules_defaults() {
         '#status' => 'default',
         '#conditions' => array(
           '0' => array(
-            '#type' => 'condition',
-            '#settings' => array(
-              'type' => array(
-                'offer' => 'offer',
-              ),
-              '#argument map' => array(
-                'node' => 'node',
-              ),
-            ),
-            '#name' => 'rules_condition_content_is_type',
+            '#weight' => 0,
             '#info' => array(
               'label' => 'Created content is Offer',
               'arguments' => array(
@@ -251,12 +267,30 @@ function person_to_person_rules_defaults() {
               ),
               'module' => 'Node',
             ),
-            '#weight' => 0,
+            '#name' => 'rules_condition_content_is_type',
+            '#settings' => array(
+              'type' => array(
+                'offer' => 'offer',
+              ),
+              '#argument map' => array(
+                'node' => 'node',
+              ),
+            ),
+            '#type' => 'condition',
           ),
         ),
         '#actions' => array(
           '0' => array(
-            '#weight' => 0,
+            '#type' => 'action',
+            '#settings' => array(
+              'from' => '',
+              'subject' => 'We have potential hosts for you!',
+              'message' => 'Aight.',
+              '#argument map' => array(
+                'user' => 'author',
+              ),
+            ),
+            '#name' => 'rules_action_mail_to_user',
             '#info' => array(
               'label' => 'Send a mail to a user',
               'arguments' => array(
@@ -272,12 +306,28 @@ function person_to_person_rules_defaults() {
                 '2' => 'from',
               ),
             ),
-            '#name' => 'rules_action_mail_to_user',
+            '#weight' => 0,
+          ),
+          '1' => array(
+            '#weight' => 0,
+            '#info' => array(
+              'label' => 'Notify referenced host(s)',
+              'arguments' => array(
+                'node' => array(
+                  'label' => 'Offer Node',
+                  'type' => 'node',
+                ),
+                'user' => array(
+                  'label' => 'Guest',
+                  'type' => 'user',
+                ),
+              ),
+              'module' => 'p2p',
+            ),
+            '#name' => 'p2p_rules_action_email_referenced_hosts',
             '#settings' => array(
-              'from' => '',
-              'subject' => 'We have potential hosts for you!',
-              'message' => 'Aight.',
               '#argument map' => array(
+                'node' => 'node',
                 'user' => 'author',
               ),
             ),

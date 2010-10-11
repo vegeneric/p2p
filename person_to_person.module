@@ -1,3 +1,138 @@
 <?php
 
 include_once('person_to_person.features.inc');
+
+// person_to_person.module Person to Person v1.0 10/04/2010 vegeneric
+
+// Require our rules integration
+require_once('person_to_person.rules.inc');
+
+/**
+ * Impementation of hook_menu
+ */
+function person_to_person_menu() {
+  $items = array();
+  $items['admin/settings/person_to_person'] = array(
+    'title' => 'Person To Person Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('person_to_person_settings'),
+    'access arguments' => array('administer site configuration'), // Must be changed!
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
+ * Callback for module settings form.
+ */
+function person_to_person_settings() {
+  $form = array();
+  $form['person_to_person_max_host_matches'] = array(
+    '#title' => t('Maximum # of host matches'),
+    '#type' => 'textfield',
+    '#size' => 5,
+    '#default_value' => variable_get('person_to_person_max_host_matches', 3),
+    '#required' => TRUE,
+  );
+  $form['person_to_person_interests_vocab'] = array(
+    '#title' => t('Maximum # of host matches'),
+    '#type' => 'select',
+    '#size' => 5,
+    '#default_value' => variable_get('person_to_person_interests_vocab', 1),
+    '#required' => TRUE,
+  );
+  $form['person_to_person_matches_found_email'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Reject offer email text',
+    '#size' => 10,
+    '#default_value' => variable_get('person_to_person_matches_found_email', ''),
+  );
+  return system_settings_form($form);
+}
+
+/**
+ * Custom form alterations for the offer node form
+ * - On creation form, make sure default dates line up with the requested dates of the guest's node.
+ */
+function person_to_person_form_offer_node_form_alter(&$form, &$form_state) {
+  // Make sure we're looking at the creation form
+  if (arg(0) == 'node' && arg(1) == 'add' && is_numeric(arg(3))) {
+    // Our date fields are cck, so we use after_build to have access.
+    $form['#after_build'][] = 'person_to_person_offer_after_build';
+  }
+}
+
+/**
+ * Our custom after-build for the offer creation form
+ * - Customize default dates of trip based on guest node.
+ */
+function person_to_person_offer_after_build($form, &$form_state) {
+  
+  // Load the guest node from the URL
+  $guest_nid = db_result(db_query("SELECT nid FROM {node} WHERE type = '%s' AND uid = %d", 'guest', arg(3)));
+  $node = node_load($guest_nid);
+  
+  // Format our depart date from the guest node
+  $depart_array = explode('T', $node->field_visit_dates[0]['value']);
+  $depart_date_array = explode('-', $depart_array[0]);
+  $depart = $depart_date_array[1] .'/'. $depart_date_array[2] .'/'. $depart_date_array[0];
+  
+  // Format our return date from the guest node
+  $return_array = explode('T', $node->field_visit_dates[0]['value2']);
+  $return_date_array = explode('-', $return_array[0]);
+  $return = $return_date_array[1] .'/'. $return_date_array[2] .'/'. $return_date_array[0];
+
+  // Feed in new defaults
+  $form['field_visit_dates'][0]['value']['date']['#value'] = $depart;
+  $form['field_visit_dates'][0]['value2']['date']['#value'] = $return;
+  return $form;
+}
+
+/**
+ * Impementation of hook_cron
+ */
+function person_to_person_cron() {
+  // Look for new matches
+  
+  // Find agreed matches with X days before the begin, email staff
+  
+  // Find matches who's trip has just ended, email everyone for feedback
+}
+
+/**
+ * Custom callback to flag potential hosts for a particular guest
+ * 
+ * @param $uid - The user id of the guest
+ * @param $node - The guest node object
+ * 
+ * @return - Boolean
+ */
+function _person_to_person_flag_hosts_for_guest($account, $node) {
+  $matches = array();
+  // Find matches based on guest's destination and desired activites
+  foreach ($node->field_ AS $key => $value) {
+    
+  }
+  $flag = flag_get_flag('potential_host');
+  foreach ($matches AS $uid => $name) {
+    $host_nid = db_result();
+    $flag->flag('flag', 456); 
+  }
+  
+}
+
+/**
+ * Implementation of hook_flag, responding when content is flagged / unflagged
+ * 
+ * @param $action - Action being taken - 'flag' or 'unflag'
+ * @param $flag - The flag object
+ * @param $content_id - The nid of the host node being flagged
+ * @param $account - The guest account on who's behalf host is being flagged 
+ */
+function person_to_person_flag($action, $flag, $content_id, $account) {
+   if ($flag->name == 'potential_host' && $action == 'flag') {
+     // Potential host has been flagged, log it.
+   } elseif ($flag->name == 'potential_host' && $action == 'unflag') {
+     // Potential host has been unflagged, log it?
+   }
+}
