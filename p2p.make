@@ -28,6 +28,8 @@ projects[flag][version] = 2.0-beta3
 
 projects[jquery_ui][subdir] = "contrib"
 
+projects[nodereference_url][subdir] = "contrib"
+
 projects[rules][subdir] = "contrib/rules"
 
 projects[token][subdir] = "contrib"
