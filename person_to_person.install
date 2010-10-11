@@ -1,0 +1,84 @@
+<?php
+
+// person_to_person.install Person to Person v1.0 10/04/2010 vegeneric
+
+function person_to_person_schema() {
+  $schema['person_to_person_potential_hosts'] = array(
+    'fields' => array(
+      'phid' => array(
+        'description' => 'The potential host identifier.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'guest_uid' => array(
+        'description' => 'Uid of the guest.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'guest_nid' => array(
+        'description' => 'Nid of the guest node.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'host_uid' => array(
+        'description' => 'Uid of the host node.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'host_nid' => array(
+        'description' => 'Nid of the host node.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'timestamp' => array(
+        'description' => 'Time potential match was made',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('phid'),
+  );
+  return $schema;
+}
+
+function person_to_person_install() {
+  drupal_install_schema('person_to_person');
+  
+  // Configre auto assign role for hosts & guests
+  $guest_rid = db_result(db_query("SELECT rid FROM {role} WHERE name = 'guest'"));
+  db_query("INSERT INTO {autoassignrole_page} (rid, display, path, menu, format) VALUES (%d, 2, 'user/register/guest', 'features', 1)", $guest_rid);
+  $host_rid = db_result(db_query("SELECT rid FROM {role} WHERE name = 'host'"));
+  db_query("INSERT INTO {autoassignrole_page} (rid, display, path, menu, format) VALUES (%d, 2, 'user/register/host', 'features', 1)", $host_rid);
+
+  // Configure content profiles for hosts & guests
+  variable_set('content_profile_use_guest', 1);
+  variable_set('content_profile_guest', array('weight' => 0, 'user_display' => 'full', 'edit_link' => 0, 'edit_tab' => 'sub', 'add_link' => 0, 'autoassignrole_user' => array(0 => $guest_rid), 'registration_user' => 0, 'admin_user_create_user' => 0, 'registation_hide' => array()));
+  variable_set('content_profile_use_host', 1);
+  variable_set('content_profile_host', array('weight' => 0, 'user_display' => 'full', 'edit_link' => 0, 'edit_tab' => 'sub', 'add_link' => 0, 'autoassignrole_user' => array(0 => $host_rid), 'registration_user' => 0, 'admin_user_create_user' => 0, 'registation_hide' => array()));
+  
+  // Set core workflow options for hosts, guests, offers, and experiences
+  // All should not be promoted to front page, and experience should not be published
+  variable_set('node_options_guest', array(0 => 'status'));
+  variable_set('node_options_host', array(0 => 'status'));
+  variable_set('node_options_offer', array(0 => 'status'));
+  variable_set('node_options_experience', array());
+  
+  // Check if a vocab named 'Interests' exists, if so, set our variable & connect to hosts and guests
+  if ($vid = db_result(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Interests'"))) {
+    variable_set('person_to_person_interests_vocab', $vid);
+    db_query("INSERT INTO {vocabulary_node_types} (vid, type) VALUES (%d, 'host')", $vid);
+    db_query("INSERT INTO {vocabulary_node_types} (vid, type) VALUES (%d, 'guest')", $vid);
+  } else {
+    drupal_set_message('No "Interests" vocabulary exists. You should '. l('admin/content/taxonomy/add/vocabulary', 'create one') .' now.');
+  }
+}
+
+function person_to_person_uninstall() {
+  drupal_uninstall_schema('person_to_person');
+}
