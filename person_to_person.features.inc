@@ -216,14 +216,7 @@ function person_to_person_rules_defaults() {
             '#weight' => 0,
           ),
           '2' => array(
-            '#type' => 'action',
-            '#settings' => array(
-              '#argument map' => array(
-                'node' => 'node',
-                'user' => 'author',
-              ),
-            ),
-            '#name' => 'p2p_rules_action_flag_potential_hosts',
+            '#weight' => 0,
             '#info' => array(
               'label' => 'Flag potential hosts',
               'arguments' => array(
@@ -236,9 +229,16 @@ function person_to_person_rules_defaults() {
                   'type' => 'user',
                 ),
               ),
-              'module' => 'p2p',
+              'module' => 'person_to_person',
             ),
-            '#weight' => 0,
+            '#name' => 'person_to_person_rules_action_flag_potential_hosts',
+            '#settings' => array(
+              '#argument map' => array(
+                'node' => 'node',
+                'user' => 'author',
+              ),
+            ),
+            '#type' => 'action',
           ),
         ),
         '#version' => 6003,
@@ -322,9 +322,9 @@ function person_to_person_rules_defaults() {
                   'type' => 'user',
                 ),
               ),
-              'module' => 'p2p',
+              'module' => 'person_to_person',
             ),
-            '#name' => 'p2p_rules_action_email_referenced_hosts',
+            '#name' => 'person_to_person_rules_action_email_referenced_hosts',
             '#settings' => array(
               '#argument map' => array(
                 'node' => 'node',

@@ -36,8 +36,11 @@ projects[token][subdir] = "contrib"
 
 projects[views][subdir] = "contrib"
 
-projects[person_to_person][type] = module
-projects[person_to_person][download][type] = git
-projects[person_to_person][download][url] = https://vegeneric@github.com/vegeneric/p2p.git
+projects[person_to_person][type] = "module"
+projects[person_to_person][download][type] = "git"
+projects[person_to_person][download][url] = "https://vegeneric@github.com/vegeneric/p2p.git"
 projects[person_to_person][subdir] = "custom"
 
+libraries[jquery_ui][download][type] = "file"
+libraries[jquery_ui][download][url] = "http://jquery-ui.googlecode.com/files/jquery.ui-1.6.zip"
+libraries[jquery_ui][destination] = "modules/contrib/jquery_ui"
