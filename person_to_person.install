@@ -79,17 +79,39 @@ function person_to_person_install() {
   // All should not be promoted to front page, and experience should not be published
   variable_set('node_options_guest', array(0 => 'status'));
   variable_set('node_options_host', array(0 => 'status'));
-  variable_set('node_options_offer', array(0 => 'status'));
+  variable_set('node_options_offer', array(0 => 'status', 1 => 'revision'));
   variable_set('node_options_experience', array());
   
   // Check if a vocab named 'Interests' exists, if so, set our variable & connect to hosts and guests
-  if ($vid = db_result(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Interests'"))) {
-    variable_set('person_to_person_interests_vocab', $vid);
-    db_query("INSERT INTO {vocabulary_node_types} (vid, type) VALUES (%d, 'host')", $vid);
-    db_query("INSERT INTO {vocabulary_node_types} (vid, type) VALUES (%d, 'guest')", $vid);
-  } else {
-    drupal_set_message('No "Interests" vocabulary exists. You should '. l('create one', 'admin/content/taxonomy/add/vocabulary') .' now.');
+  if (!$int_vid = db_result(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Interests'"))) {
+    db_query("INSERT INTO {vocabulary} (name, relations, hierarchy, multiple, required, module) VALUES ('Interests', 1, 1, 1, 1, 'person_to_person')");
+    $int_vid = db_result(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Interests'"));
+    drupal_set_message('Automatically created Interests vocabulary. You should '. l('add some terms', 'admin/content/taxonomy/'. $int_vid .'/add/term', array('attributes' => array('target' => '_blank'))) .' now.');
   }
+  variable_set('person_to_person_interests_vocab', $int_vid);
+  db_query("INSERT INTO {vocabulary_node_types} (vid, type) VALUES (%d, 'host')", $int_vid);
+  db_query("INSERT INTO {vocabulary_node_types} (vid, type) VALUES (%d, 'guest')", $int_vid);
+  
+  // Do the same thing for an 'Islands' vocab
+  if (!$isl_vid = db_result(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Island'"))) {
+    db_query("INSERT INTO {vocabulary} (name, relations, hierarchy, required, module) VALUES ('Island', 1, 1, 1, 'person_to_person')");
+    $isl_vid = db_result(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Island'"));
+    drupal_set_message('Automatically created Island vocabulary. You should '. l('add some terms', 'admin/content/taxonomy/'. $isl_vid .'/add/term', array('attributes' => array('target' => '_blank'))) .' now.');
+  }
+  variable_set('person_to_person_island_vocab', $isl_vid);
+  
+  db_query("INSERT INTO {vocabulary_node_types} (vid, type) VALUES (%d, 'host')", $isl_vid);
+  db_query("INSERT INTO {vocabulary_node_types} (vid, type) VALUES (%d, 'guest')", $isl_vid);
+  db_query("INSERT INTO {vocabulary_node_types} (vid, type) VALUES (%d, 'offer')", $isl_vid);
+  db_query("INSERT INTO {vocabulary_node_types} (vid, type) VALUES (%d, 'experience')", $isl_vid);
+  
+  // Make sure to create 'All / Not sure' term for Island vocab
+  $term = array(
+    'vid' => $isl_vid,
+    'name' => 'All / Not sure',
+    'weight' => -10,
+  );
+  taxonomy_save_term($term);
 }
 
 function person_to_person_uninstall() {

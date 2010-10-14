@@ -216,7 +216,14 @@ function person_to_person_rules_defaults() {
             '#weight' => 0,
           ),
           '2' => array(
-            '#weight' => 0,
+            '#type' => 'action',
+            '#settings' => array(
+              '#argument map' => array(
+                'node' => 'node',
+                'user' => 'author',
+              ),
+            ),
+            '#name' => 'person_to_person_rules_action_flag_potential_hosts',
             '#info' => array(
               'label' => 'Flag potential hosts',
               'arguments' => array(
@@ -231,14 +238,7 @@ function person_to_person_rules_defaults() {
               ),
               'module' => 'person_to_person',
             ),
-            '#name' => 'person_to_person_rules_action_flag_potential_hosts',
-            '#settings' => array(
-              '#argument map' => array(
-                'node' => 'node',
-                'user' => 'author',
-              ),
-            ),
-            '#type' => 'action',
+            '#weight' => 0,
           ),
         ),
         '#version' => 6003,

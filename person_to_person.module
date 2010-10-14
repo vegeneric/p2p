@@ -27,6 +27,7 @@ function person_to_person_menu() {
  */
 function person_to_person_settings() {
   $form = array();
+
   $form['person_to_person_max_host_matches'] = array(
     '#title' => t('Maximum # of host matches'),
     '#type' => 'textfield',
@@ -34,18 +35,39 @@ function person_to_person_settings() {
     '#default_value' => variable_get('person_to_person_max_host_matches', 3),
     '#required' => TRUE,
   );
+  
+  // Build option array of all vocabularies... 
+  // taxonomy_get_vocabularies() was timing out for some reason
+  $vocabs = array();
+  $sql = db_query("SELECT vid, name FROM {vocabulary}");
+  while ($data = db_fetch_object($sql)) {
+    $vocabs[$data->vid] = $data->name;
+  }
+  
   $form['person_to_person_interests_vocab'] = array(
-    '#title' => t('Maximum # of host matches'),
+    '#title' => t('Taxonomy vocabulary for Interests'),
     '#type' => 'select',
     '#size' => 5,
     '#default_value' => variable_get('person_to_person_interests_vocab', 1),
     '#required' => TRUE,
+    '#multiple' => FALSE,
+    '#options' => $vocabs
   );
-  $form['person_to_person_matches_found_email'] = array(
+  $form['person_to_person_island_vocab'] = array(
+    '#title' => t('Taxonomy vocabulary for Island'),
+    '#type' => 'select',
+    '#size' => 5,
+    '#default_value' => variable_get('person_to_person_island_vocab', 1),
+    '#required' => TRUE,
+    '#multiple' => FALSE,
+    '#options' => $vocabs
+  );
+  
+  $form['person_to_person_match_found_email'] = array(
     '#type' => 'textarea',
-    '#title' => 'Reject offer email text',
+    '#title' => t('New potential mach found email text'),
     '#size' => 10,
-    '#default_value' => variable_get('person_to_person_matches_found_email', ''),
+    '#default_value' => variable_get('person_to_person_match_found_email', '')
   );
   return system_settings_form($form);
 }
@@ -53,12 +75,42 @@ function person_to_person_settings() {
 /**
  * Custom form alterations for the offer node form
  * - On creation form, make sure default dates line up with the requested dates of the guest's node.
+ * - On creation form, make sure author is set as guest.
  */
 function person_to_person_form_offer_node_form_alter(&$form, &$form_state) {
-  // Make sure we're looking at the creation form
-  if (arg(0) == 'node' && arg(1) == 'add' && is_numeric(arg(3))) {
-    // Our date fields are cck, so we use after_build to have access.
-    $form['#after_build'][] = 'person_to_person_offer_after_build';
+
+  // Our date fields are cck, so we use after_build to have access.
+  $form['#after_build'][] = 'person_to_person_offer_after_build';
+  
+  // Add custom validation
+  $form['#validate'][] = 'person_to_person_offer_validate';
+  
+  // Reverse validation order so we're called first
+  $form['#validate'] = array_reverse($form['#validate']);
+}
+
+/**
+ * Custom validation for the offer node form
+ */
+function person_to_person_offer_validate(&$form, &$form_state) {
+  dsm($form);
+  dsm($form_state);  
+  // If existing node, 
+  if ($nid = $form['nid']['#value']) {
+    
+    //Remove erroneous field_host values
+    unset($form_state['values']['field_host']['nid']);
+    
+    // Feed in proper confirmation checkbox values
+    if ($form['#node']->field_confirm_host[0]['value'] = 1) {
+      $form_state['values']['field_confirm_host'] = array(0 => array('value' => 1));
+    }
+    if ($form['#node']->field_confirm_guest[0]['value'] = 1) {
+      $form_state['values']['field_confirm_guest'] = array(0 => array('value' => 1));
+    }
+    if ($form['#node']->field_confirm_all[0]['value'] = 1) {
+      $form_state['values']['field_confirm_all'] = array(0 => array('value' => 1));
+    }
   }
 }
 
@@ -68,23 +120,67 @@ function person_to_person_form_offer_node_form_alter(&$form, &$form_state) {
  */
 function person_to_person_offer_after_build($form, &$form_state) {
   
-  // Load the guest node from the URL
-  $guest_nid = db_result(db_query("SELECT nid FROM {node} WHERE type = '%s' AND uid = %d", 'guest', arg(3)));
-  $node = node_load($guest_nid);
+  // Make sure we're looking at the creation form
+  if (arg(0) == 'node' && arg(1) == 'add' && is_numeric(arg(3))) {
+    
+    // Load the guest node from the URL
+    $guest_nid = arg(3);
+    $node = node_load($guest_nid);
+    
+    // Format our depart date from the guest node
+    $depart_array = explode('T', $node->field_visit_dates[0]['value']);
+    $depart_date_array = explode('-', $depart_array[0]);
+    $depart = $depart_date_array[1] .'/'. $depart_date_array[2] .'/'. $depart_date_array[0];
+    
+    // Format our return date from the guest node
+    $return_array = explode('T', $node->field_visit_dates[0]['value2']);
+    $return_date_array = explode('-', $return_array[0]);
+    $return = $return_date_array[1] .'/'. $return_date_array[2] .'/'. $return_date_array[0];
   
-  // Format our depart date from the guest node
-  $depart_array = explode('T', $node->field_visit_dates[0]['value']);
-  $depart_date_array = explode('-', $depart_array[0]);
-  $depart = $depart_date_array[1] .'/'. $depart_date_array[2] .'/'. $depart_date_array[0];
-  
-  // Format our return date from the guest node
-  $return_array = explode('T', $node->field_visit_dates[0]['value2']);
-  $return_date_array = explode('-', $return_array[0]);
-  $return = $return_date_array[1] .'/'. $return_date_array[2] .'/'. $return_date_array[0];
-
-  // Feed in new defaults
-  $form['field_visit_dates'][0]['value']['date']['#value'] = $depart;
-  $form['field_visit_dates'][0]['value2']['date']['#value'] = $return;
+    // Feed in new defaults
+    $form['field_visit_dates'][0]['value']['date']['#value'] = $depart;
+    $form['field_visit_dates'][0]['value2']['date']['#value'] = $return;
+    
+    // Set node author as the guest in question, to make for less custom rules code.
+    $guest_uid = db_result(db_query("SELECT uid FROM {node} WHERE type = 'guest' AND nid = %d", arg(3)));
+    $account = user_load(array('uid' => $guest_uid));
+    $form['author']['name']['#default_value'] = $account->name;
+    
+  } elseif (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == 'edit') {
+    
+    // If host is confirmed, we need to disable the checkbox AND the host nodereference field
+    if ($form['field_confirm_host']['#default_value'][0]['value'] == 1) {
+      
+      // Disable confirm host checkbox
+      $form['field_confirm_host']['value']['#attributes']['disabled'] = 'disabled';
+      $host_nid = $form['field_host']['#value'][0]['nid'];
+      $host_node = node_load($host_nid);
+      
+      // Replace old field with simple value, careful to preserve weight.
+      $form['field_host'] = array('#weight' => $form['field_host']['#weight']);
+      $form['field_host']['#type'] = 'value';
+      $form['field_host']['#value'] = array(0 => array('nid' => $host_nid));
+      
+      // Add new markup field (imitating markup form nodereference_url.module)
+      $form['field_host_markup'] = array(
+        '#type' => 'markup',
+        '#weight' => $form['field_host']['#weight'],
+        '#value' => '<div id="edit-field-host-0-nid-wrapper" class="form-item">
+                    <label for="edit-field-host-0-nid">Host: </label>
+                    '. $host_node->title .'</div>');
+    }
+    
+    // If guest is confirmed, disable checkbox
+    if ($form['field_confirm_guest']['#default_value'][0]['value'] == 1) {
+      $form['field_confirm_guest']['value']['#attributes']['disabled'] = 'disabled';
+    }
+    
+    // If admin is confirmed, disable checkbox
+    if ($form['field_confirm_admin']['#default_value'][0]['value'] == 1) {
+      $form['field_confirm_all']['value']['#attributes']['disabled'] = 'disabled';
+    }
+  }
+  dsm($form);
   return $form;
 }
 
@@ -92,37 +188,86 @@ function person_to_person_offer_after_build($form, &$form_state) {
  * Impementation of hook_cron
  */
 function person_to_person_cron() {
-  // Look for new matches
   
-  // Find agreed matches with X days before the begin, email staff
+  // 1a. Look for guests that need a host
+  $guests = _person_to_person_guests_needing_host();
   
-  // Find matches who's trip has just ended, email everyone for feedback
+  // 1b. Find and flag new potential hosts for guest
+  foreach ($guests AS $guest_uid => $guest_nid) {
+    $guest_account = user_load(array('uid' => $guest_uid));
+    $guest_node = node_load($guest_nid);
+    _person_to_person_find_hosts_for_guest($guest_account, $guest_node, TRUE);
+  }
+  
+  // 2. Find agreed matches with X days before the begin date, email staff
+  
+  // 3. Find matches who's trip has just ended, email everyone for feedback
+}
+
+/*
+ * Helper function to find guests in need of a host
+ * 
+ * @return - array of guests - array(USER_ID => 'GUEST_NODE_NID') 
+ */
+function _person_to_person_guests_needing_host() {
+  //$sql = db_query("SELECT n.uid, n.nid FROM {node} n INNER JOIN {} ON INNER JOIN {} ON WHERE n.type = 'guest' AND ''")
 }
 
 /**
- * Custom callback to flag potential hosts for a particular guest
+ * Helper function to find (and flag) potential hosts for a particular guest
  * 
  * @param $uid - The user id of the guest
  * @param $node - The guest node object
+ * @param $flag
  * 
- * @return - Boolean
+ * @return - Boolean - As long as one host is found, returns TRUE, otherwise FALSE
  */
-function _person_to_person_flag_hosts_for_guest($account, $node) {
-  $matches = array();
-  // Find matches based on guest's destination and desired activites
-  foreach ($node->field_ AS $key => $value) {
-    
-  }
-  $flag = flag_get_flag('potential_host');
-  foreach ($matches AS $uid => $name) {
-    $host_nid = db_result();
-    $flag->flag('flag', 456); 
-  }
+function _person_to_person_find_hosts_for_guest($account, $node, $flag = FALSE) {
   
+  // Find matches based on guest's destination and desired activites
+  $return = FALSE;
+  $matches = array();
+  $hosts = array();
+  dsm($account);
+  dsm($node);
+  $isl_vid = variable_get('person_to_person_island_vocab');
+  $int_vid = variable_get('person_to_person_int_vocab');
+  $isl_all_tid = db_result(db_query("SELECT tid FROM {term_data} WHERE vid = %d AND name = '%s'", $isl_vid, 'All / Not sure'));
+  $ints_guest = $node->taxonomy[$int_vid];
+
+  if ($node->taxonomy[$isl_vid] != $isl_all_tid) {
+    $sql = db_query("SELECT DISTINCT n.nid, n.uid, u.name FROM {node} n INNER JOIN {users} u ON n.uid = u.uid INNER JOIN {term_node} tn ON n.nid = tn.nid WHERE n.type = 'host' AND n.status = 1 AND tn.tid = %d", $node->taxonomy[$isl_vid]);
+  } else {
+    $sql = db_query("SELECT n.nid, n.uid, u.name FROM {node} n INNER JOIN {users} u ON n.uid = u.uid WHERE n.type = 'host' AND n.status = 1");
+  }
+  while ($data = db_fetch_object($sql)) {
+    $hosts[$data->uid] = $data->nid;
+  }
+  foreach ($hosts AS $host_uid => $host_nid) {
+    $host_node = node_load($host_nid);
+    $ints_host = $host_node->taxonomy[$int_vid];
+    $common_interests = array_intersect($ints_guest, $ints_host);
+    $common_interests_count = count($common_interests);
+    if ($common_interests_count > 0) {
+      $matches[$host_nid] = $common_interests_count; 
+    }
+  }
+  if (count($matches) > 0) {
+    $return = TRUE;
+    if ($flag = TRUE) {
+      $host_flag = flag_get_flag('potential_host');
+      foreach ($matches AS $host_nid => $count) {
+        $host_nid = db_result();
+        $host_flag->flag('flag', $host_nid, $account);
+      }
+    }
+  }
+  return $return;
 }
 
 /**
- * Implementation of hook_flag, responding when content is flagged / unflagged
+ * Implementation of hook_flag, responding when potential host is flagged / unflagged
+ * Used to log hosts who have been matched with guests
  * 
  * @param $action - Action being taken - 'flag' or 'unflag'
  * @param $flag - The flag object
@@ -130,9 +275,31 @@ function _person_to_person_flag_hosts_for_guest($account, $node) {
  * @param $account - The guest account on who's behalf host is being flagged 
  */
 function person_to_person_flag($action, $flag, $content_id, $account) {
-   if ($flag->name == 'potential_host' && $action == 'flag') {
-     // Potential host has been flagged, log it.
-   } elseif ($flag->name == 'potential_host' && $action == 'unflag') {
-     // Potential host has been unflagged, log it?
-   }
+  if ($flag->name == 'potential_host') {
+    $host_node = node_load($content_id);
+    $guest_node = node_load(db_result(db_query("SELECT nid FROM {node} WHERE type = 'guest' AND uid = %d", $account->uid)));
+    
+    // Build our basic record for writing to the db
+    $record = array(
+      'guest_uid' => $account->uid,
+      'guest_nid' => $guest_node->nid,
+      'host_uid' => $host_node->uid,
+      'host_nid' => $host_node->nid,
+      'timestamp' => time(),
+    );
+
+    // Potential host has been flagged, log it.
+    if ($action == 'flag') {
+      
+      // NOTE: This should be switched to BOOLEAN if we're only going to have 'flagged' and 'unflagged'
+      $record['status'] = 'flagged';
+      
+    // Potential host has been unflagged log it.
+    } elseif ($flag->name == 'potential_host' && $action == 'unflag') {
+      $record['status'] = 'unflagged';
+    }
+    // Find out if this is an existing record so we can update if necessary
+    $exists = db_result(db_query("SELECT phid FROM {person_to_person_potential_hosts} WHERE guest_uid = %d AND guest_nid = %d AND host_uid = %d AND host_nid = %d", $account->uid, $guest_node->nid, $host_node->uid, $host_node->nid));
+    drupal_write_record('person_to_person_potential_hosts', $record, ($exists ? array('phid' => $exists) : NULL));
+  }
 }
