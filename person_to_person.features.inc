@@ -121,6 +121,124 @@ For more information, contact us and we’ll get back to you as soon as possible
 function person_to_person_rules_defaults() {
   return array(
     'rules' => array(
+      'person_to_person_2' => array(
+        '#type' => 'rule',
+        '#set' => 'event_node_insert',
+        '#label' => 'Offer creation notifications',
+        '#active' => 1,
+        '#weight' => '0',
+        '#categories' => array(
+          '0' => 'person-to-person',
+          'person_to_person' => 'person_to_person',
+        ),
+        '#status' => 'default',
+        '#conditions' => array(
+          '0' => array(
+            '#type' => 'condition',
+            '#settings' => array(
+              'type' => array(
+                'offer' => 'offer',
+              ),
+              '#argument map' => array(
+                'node' => 'node',
+              ),
+            ),
+            '#name' => 'rules_condition_content_is_type',
+            '#info' => array(
+              'label' => 'Created content is Offer',
+              'arguments' => array(
+                'node' => array(
+                  'type' => 'node',
+                  'label' => 'Content',
+                ),
+              ),
+              'module' => 'Node',
+            ),
+            '#weight' => 0,
+          ),
+        ),
+        '#actions' => array(
+          '0' => array(
+            '#weight' => 0,
+            '#info' => array(
+              'label' => 'Send a mail to a user',
+              'arguments' => array(
+                'user' => array(
+                  'type' => 'user',
+                  'label' => 'Recipient',
+                ),
+              ),
+              'module' => 'System',
+              'eval input' => array(
+                '0' => 'subject',
+                '1' => 'message',
+                '2' => 'from',
+              ),
+            ),
+            '#name' => 'rules_action_mail_to_user',
+            '#settings' => array(
+              'from' => '',
+              'subject' => 'We have potential hosts for you!',
+              'message' => 'Aight.',
+              '#argument map' => array(
+                'user' => 'author',
+              ),
+            ),
+            '#type' => 'action',
+          ),
+          '1' => array(
+            '#type' => 'action',
+            '#settings' => array(
+              '#argument map' => array(
+                'node' => 'node',
+                'user' => 'author',
+              ),
+            ),
+            '#name' => 'person_to_person_rules_action_email_referenced_hosts',
+            '#info' => array(
+              'label' => 'Notify referenced host(s)',
+              'arguments' => array(
+                'node' => array(
+                  'label' => 'Offer Node',
+                  'type' => 'node',
+                ),
+                'user' => array(
+                  'label' => 'Guest',
+                  'type' => 'user',
+                ),
+              ),
+              'module' => 'person_to_person',
+            ),
+            '#weight' => 0,
+          ),
+          '2' => array(
+            '#weight' => 0,
+            '#info' => array(
+              'label' => 'Unflag hosts deselected from an offer',
+              'arguments' => array(
+                'node' => array(
+                  'label' => 'Offer Node',
+                  'type' => 'node',
+                ),
+                'user' => array(
+                  'label' => 'Guest',
+                  'type' => 'user',
+                ),
+              ),
+              'module' => 'person_to_person',
+            ),
+            '#name' => 'person_to_person_rules_action_unflag_deselected_hosts',
+            '#settings' => array(
+              '#argument map' => array(
+                'node' => 'node',
+                'user' => 'author',
+              ),
+            ),
+            '#type' => 'action',
+          ),
+        ),
+        '#version' => 6003,
+      ),
       'person_to_person_1' => array(
         '#type' => 'rule',
         '#set' => 'event_node_insert',
@@ -239,99 +357,6 @@ function person_to_person_rules_defaults() {
               'module' => 'person_to_person',
             ),
             '#weight' => 0,
-          ),
-        ),
-        '#version' => 6003,
-      ),
-      'person_to_person_2' => array(
-        '#type' => 'rule',
-        '#set' => 'event_node_insert',
-        '#label' => 'Offer creation notifications',
-        '#active' => 1,
-        '#weight' => '0',
-        '#categories' => array(
-          '0' => 'person-to-person',
-          'person_to_person' => 'person_to_person',
-        ),
-        '#status' => 'default',
-        '#conditions' => array(
-          '0' => array(
-            '#weight' => 0,
-            '#info' => array(
-              'label' => 'Created content is Offer',
-              'arguments' => array(
-                'node' => array(
-                  'type' => 'node',
-                  'label' => 'Content',
-                ),
-              ),
-              'module' => 'Node',
-            ),
-            '#name' => 'rules_condition_content_is_type',
-            '#settings' => array(
-              'type' => array(
-                'offer' => 'offer',
-              ),
-              '#argument map' => array(
-                'node' => 'node',
-              ),
-            ),
-            '#type' => 'condition',
-          ),
-        ),
-        '#actions' => array(
-          '0' => array(
-            '#type' => 'action',
-            '#settings' => array(
-              'from' => '',
-              'subject' => 'We have potential hosts for you!',
-              'message' => 'Aight.',
-              '#argument map' => array(
-                'user' => 'author',
-              ),
-            ),
-            '#name' => 'rules_action_mail_to_user',
-            '#info' => array(
-              'label' => 'Send a mail to a user',
-              'arguments' => array(
-                'user' => array(
-                  'type' => 'user',
-                  'label' => 'Recipient',
-                ),
-              ),
-              'module' => 'System',
-              'eval input' => array(
-                '0' => 'subject',
-                '1' => 'message',
-                '2' => 'from',
-              ),
-            ),
-            '#weight' => 0,
-          ),
-          '1' => array(
-            '#weight' => 0,
-            '#info' => array(
-              'label' => 'Notify referenced host(s)',
-              'arguments' => array(
-                'node' => array(
-                  'label' => 'Offer Node',
-                  'type' => 'node',
-                ),
-                'user' => array(
-                  'label' => 'Guest',
-                  'type' => 'user',
-                ),
-              ),
-              'module' => 'person_to_person',
-            ),
-            '#name' => 'person_to_person_rules_action_email_referenced_hosts',
-            '#settings' => array(
-              '#argument map' => array(
-                'node' => 'node',
-                'user' => 'author',
-              ),
-            ),
-            '#type' => 'action',
           ),
         ),
         '#version' => 6003,
@@ -752,6 +777,71 @@ function person_to_person_rules_defaults() {
               ),
               'module' => 'Node',
             ),
+          ),
+        ),
+        '#version' => 6003,
+      ),
+      'person_to_person_6' => array(
+        '#type' => 'rule',
+        '#set' => 'event_node_update',
+        '#label' => 'Offer updated',
+        '#active' => 1,
+        '#weight' => '0',
+        '#categories' => array(
+          '0' => 'person-to-person',
+          'person_to_person' => 'person_to_person',
+        ),
+        '#status' => 'default',
+        '#conditions' => array(
+          '0' => array(
+            '#type' => 'condition',
+            '#settings' => array(
+              'type' => array(
+                'offer' => 'offer',
+              ),
+              '#argument map' => array(
+                'node' => 'node',
+              ),
+            ),
+            '#name' => 'rules_condition_content_is_type',
+            '#info' => array(
+              'label' => 'Updated content is Offer',
+              'arguments' => array(
+                'node' => array(
+                  'type' => 'node',
+                  'label' => 'Content',
+                ),
+              ),
+              'module' => 'Node',
+            ),
+            '#weight' => 0,
+          ),
+        ),
+        '#actions' => array(
+          '0' => array(
+            '#weight' => 0,
+            '#info' => array(
+              'label' => 'Unflag hosts deselected from an offer',
+              'arguments' => array(
+                'node' => array(
+                  'label' => 'Offer Node',
+                  'type' => 'node',
+                ),
+                'user' => array(
+                  'label' => 'Guest',
+                  'type' => 'user',
+                ),
+              ),
+              'module' => 'person_to_person',
+            ),
+            '#name' => 'person_to_person_rules_action_unflag_deselected_hosts',
+            '#settings' => array(
+              '#argument map' => array(
+                'node' => 'node',
+                'user' => 'author',
+              ),
+            ),
+            '#type' => 'action',
           ),
         ),
         '#version' => 6003,
