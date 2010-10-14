@@ -106,7 +106,7 @@ function person_to_person_rules_action_unflag_deselected_hosts($node, $account) 
  */
 function person_to_person_rules_action_email_referenced_hosts($node, $account) {
   foreach ($node->field_host AS $key => $host_nid) {
-    _person_to_person_email_host($host_nid);
+    //_person_to_person_email_host($host_nid);
   }
 }
 

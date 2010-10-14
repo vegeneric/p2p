@@ -42,7 +42,7 @@ $flags[] = array (
   'module' => 'person_to_person',
   'locked' => 
   array (
-    0 => 'name',
+    'name' => 'name',
   ),
   'api_version' => 2,
 );
@@ -231,6 +231,282 @@ function person_to_person_rules_defaults() {
             '#settings' => array(
               '#argument map' => array(
                 'node' => 'node',
+                'user' => 'author',
+              ),
+            ),
+            '#type' => 'action',
+          ),
+        ),
+        '#version' => 6003,
+      ),
+      'person_to_person_5' => array(
+        '#type' => 'rule',
+        '#set' => 'event_node_update',
+        '#label' => 'Offer update - all confirmed',
+        '#active' => 1,
+        '#weight' => '0',
+        '#categories' => array(
+          '0' => 'person-to-person',
+          'person_to_person' => 'person_to_person',
+        ),
+        '#status' => 'default',
+        '#conditions' => array(
+          '0' => array(
+            '#type' => 'condition',
+            '#settings' => array(
+              'type' => array(
+                'offer' => 'offer',
+              ),
+              '#argument map' => array(
+                'node' => 'node',
+              ),
+            ),
+            '#name' => 'rules_condition_content_is_type',
+            '#info' => array(
+              'label' => 'Updated content is Offer',
+              'arguments' => array(
+                'node' => array(
+                  'type' => 'node',
+                  'label' => 'Content',
+                ),
+              ),
+              'module' => 'Node',
+            ),
+            '#weight' => 0,
+          ),
+          '1' => array(
+            '#weight' => 0,
+            '#info' => array(
+              'label' => 'Updated content\'s field \'field_confirm_admin\' has value',
+              'arguments' => array(
+                'node' => array(
+                  'type' => 'node',
+                  'label' => 'Content',
+                ),
+              ),
+              'eval input' => array(
+                '0' => 'code',
+              ),
+              'module' => 'CCK',
+            ),
+            '#name' => 'content_rules_field_has_value',
+            '#settings' => array(
+              'field_name' => 'field_confirm_admin',
+              '#argument map' => array(
+                'node' => 'node',
+              ),
+              'value' => array(
+                '0' => array(
+                  'value' => 1,
+                ),
+              ),
+              'code' => '',
+            ),
+            '#type' => 'condition',
+          ),
+          '2' => array(
+            '#type' => 'condition',
+            '#settings' => array(
+              'field_name' => 'field_confirm_guest',
+              '#argument map' => array(
+                'node' => 'node',
+              ),
+              'value' => array(
+                '0' => array(
+                  'value' => 1,
+                ),
+              ),
+              'code' => '',
+            ),
+            '#name' => 'content_rules_field_has_value',
+            '#info' => array(
+              'label' => 'Updated content\'s field \'field_confirm_guest\' has value',
+              'arguments' => array(
+                'node' => array(
+                  'type' => 'node',
+                  'label' => 'Content',
+                ),
+              ),
+              'eval input' => array(
+                '0' => 'code',
+              ),
+              'module' => 'CCK',
+            ),
+            '#weight' => 0,
+          ),
+          '3' => array(
+            '#weight' => 0,
+            '#info' => array(
+              'label' => 'Updated content\'s field \'field_confirm_host\' has value',
+              'arguments' => array(
+                'node' => array(
+                  'type' => 'node',
+                  'label' => 'Content',
+                ),
+              ),
+              'eval input' => array(
+                '0' => 'code',
+              ),
+              'module' => 'CCK',
+            ),
+            '#name' => 'content_rules_field_has_value',
+            '#settings' => array(
+              'field_name' => 'field_confirm_host',
+              '#argument map' => array(
+                'node' => 'node',
+              ),
+              'value' => array(
+                '0' => array(
+                  'value' => 1,
+                ),
+              ),
+              'code' => '',
+            ),
+            '#type' => 'condition',
+          ),
+          '4' => array(
+            '#type' => 'condition',
+            '#settings' => array(
+              'field_name' => 'field_confirm_admin',
+              '#argument map' => array(
+                'node' => 'node',
+                'node_unchanged' => 'node_unchanged',
+              ),
+            ),
+            '#name' => 'content_rules_field_changed',
+            '#info' => array(
+              'label' => 'Updated content\'s field \'field_confirm_admin\' has been changed',
+              'arguments' => array(
+                'node' => array(
+                  'type' => 'node',
+                  'label' => 'Content containing changes',
+                ),
+                'node_unchanged' => array(
+                  'type' => 'node',
+                  'label' => 'Content not containing changes',
+                ),
+              ),
+              'module' => 'CCK',
+            ),
+            '#weight' => 0,
+          ),
+        ),
+        '#actions' => array(
+          '0' => array(
+            '#type' => 'action',
+            '#settings' => array(
+              'title' => '[node:title]',
+              'type' => 'experience',
+              'node_access' => 0,
+              '#argument map' => array(
+                'author' => 'author',
+                'node_added' => 'experience_added',
+              ),
+              '#eval input' => array(
+                'token_rules_input_evaluator' => array(
+                  'title' => array(
+                    '0' => 'node',
+                  ),
+                ),
+              ),
+            ),
+            '#name' => 'rules_action_add_node',
+            '#info' => array(
+              'label' => 'Create experience node',
+              'label callback' => FALSE,
+              'arguments' => array(
+                'author' => array(
+                  'type' => 'user',
+                  'label' => 'User, who is set as author',
+                ),
+                'title' => array(
+                  'type' => 'string',
+                  'label' => 'Title',
+                  'description' => 'The title of the newly created content.',
+                ),
+              ),
+              'new variables' => array(
+                'experience_added' => array(
+                  'label' => 'new experience',
+                  'label callback' => FALSE,
+                  'type' => 'node',
+                  'save' => TRUE,
+                ),
+              ),
+              'module' => 'Node',
+            ),
+            '#weight' => 0,
+          ),
+          '1' => array(
+            '#weight' => 0,
+            '#info' => array(
+              'label' => 'Notify referenced host(s)',
+              'arguments' => array(
+                'node' => array(
+                  'label' => 'Offer Node',
+                  'type' => 'node',
+                ),
+                'user' => array(
+                  'label' => 'Guest',
+                  'type' => 'user',
+                ),
+              ),
+              'module' => 'person_to_person',
+            ),
+            '#name' => 'person_to_person_rules_action_email_referenced_hosts',
+            '#settings' => array(
+              '#argument map' => array(
+                'node' => 'node',
+                'user' => 'author',
+              ),
+            ),
+            '#type' => 'action',
+          ),
+          '2' => array(
+            '#type' => 'action',
+            '#settings' => array(
+              'recipients' => array(
+                '0' => 5,
+              ),
+              'from' => '',
+              'subject' => '',
+              'message' => '',
+            ),
+            '#name' => 'rules_action_mail_to_users_of_role',
+            '#info' => array(
+              'label' => 'Send a mail to all users of a role',
+              'module' => 'System',
+              'eval input' => array(
+                '0' => 'subject',
+                '1' => 'message',
+                '2' => 'from',
+              ),
+            ),
+            '#weight' => 0,
+          ),
+          '3' => array(
+            '#weight' => 0,
+            '#info' => array(
+              'label' => 'Send a mail to a user',
+              'arguments' => array(
+                'user' => array(
+                  'type' => 'user',
+                  'label' => 'Recipient',
+                ),
+              ),
+              'module' => 'System',
+              'eval input' => array(
+                '0' => 'subject',
+                '1' => 'message',
+                '2' => 'from',
+              ),
+            ),
+            '#name' => 'rules_action_mail_to_user',
+            '#settings' => array(
+              'from' => '',
+              'subject' => '',
+              'message' => '',
+              '#argument map' => array(
                 'user' => 'author',
               ),
             ),
@@ -602,181 +878,6 @@ function person_to_person_rules_defaults() {
               'message' => 'Finalize that!',
             ),
             '#type' => 'action',
-          ),
-        ),
-        '#version' => 6003,
-      ),
-      'person_to_person_5' => array(
-        '#type' => 'rule',
-        '#set' => 'event_node_update',
-        '#label' => 'Offer update - all confirmed',
-        '#active' => 1,
-        '#weight' => '0',
-        '#categories' => array(
-          '0' => 'person-to-person',
-          'person_to_person' => 'person_to_person',
-        ),
-        '#status' => 'default',
-        '#conditions' => array(
-          '0' => array(
-            '#type' => 'condition',
-            '#settings' => array(
-              'type' => array(
-                'offer' => 'offer',
-              ),
-              '#argument map' => array(
-                'node' => 'node',
-              ),
-            ),
-            '#name' => 'rules_condition_content_is_type',
-            '#info' => array(
-              'label' => 'Updated content is Offer',
-              'arguments' => array(
-                'node' => array(
-                  'type' => 'node',
-                  'label' => 'Content',
-                ),
-              ),
-              'module' => 'Node',
-            ),
-            '#weight' => 0,
-          ),
-          '1' => array(
-            '#weight' => 0,
-            '#info' => array(
-              'label' => 'Updated content\'s field \'field_confirm_admin\' has value',
-              'arguments' => array(
-                'node' => array(
-                  'type' => 'node',
-                  'label' => 'Content',
-                ),
-              ),
-              'eval input' => array(
-                '0' => 'code',
-              ),
-              'module' => 'CCK',
-            ),
-            '#name' => 'content_rules_field_has_value',
-            '#settings' => array(
-              'field_name' => 'field_confirm_admin',
-              '#argument map' => array(
-                'node' => 'node',
-              ),
-              'value' => array(
-                '0' => array(
-                  'value' => NULL,
-                ),
-              ),
-              'code' => '',
-            ),
-            '#type' => 'condition',
-          ),
-          '2' => array(
-            '#type' => 'condition',
-            '#settings' => array(
-              'field_name' => 'field_confirm_guest',
-              '#argument map' => array(
-                'node' => 'node',
-              ),
-              'value' => array(
-                '0' => array(
-                  'value' => NULL,
-                ),
-              ),
-              'code' => '',
-            ),
-            '#name' => 'content_rules_field_has_value',
-            '#info' => array(
-              'label' => 'Updated content\'s field \'field_confirm_guest\' has value',
-              'arguments' => array(
-                'node' => array(
-                  'type' => 'node',
-                  'label' => 'Content',
-                ),
-              ),
-              'eval input' => array(
-                '0' => 'code',
-              ),
-              'module' => 'CCK',
-            ),
-            '#weight' => 0,
-          ),
-          '3' => array(
-            '#weight' => 0,
-            '#info' => array(
-              'label' => 'Updated content\'s field \'field_confirm_host\' has value',
-              'arguments' => array(
-                'node' => array(
-                  'type' => 'node',
-                  'label' => 'Content',
-                ),
-              ),
-              'eval input' => array(
-                '0' => 'code',
-              ),
-              'module' => 'CCK',
-            ),
-            '#name' => 'content_rules_field_has_value',
-            '#settings' => array(
-              'field_name' => 'field_confirm_host',
-              '#argument map' => array(
-                'node' => 'node',
-              ),
-              'value' => array(
-                '0' => array(
-                  'value' => NULL,
-                ),
-              ),
-              'code' => '',
-            ),
-            '#type' => 'condition',
-          ),
-        ),
-        '#actions' => array(
-          '0' => array(
-            '#weight' => 0,
-            '#type' => 'action',
-            '#settings' => array(
-              'title' => '[node:title]',
-              'type' => 'experience',
-              'node_access' => 0,
-              '#argument map' => array(
-                'author' => 'user',
-                'node_added' => 'experience_added',
-              ),
-              '#eval input' => array(
-                'token_rules_input_evaluator' => array(
-                  'title' => array(
-                    '0' => 'node',
-                  ),
-                ),
-              ),
-            ),
-            '#name' => 'rules_action_add_node',
-            '#info' => array(
-              'label' => 'Create experience node',
-              'label callback' => FALSE,
-              'arguments' => array(
-                'author' => array(
-                  'type' => 'user',
-                  'label' => 'User, who is set as author',
-                ),
-                'title' => array(
-                  'type' => 'string',
-                  'label' => 'Title',
-                  'description' => 'The title of the newly created content.',
-                ),
-              ),
-              'new variables' => array(
-                'experience_added' => array(
-                  'label' => 'new experience',
-                  'label callback' => FALSE,
-                  'type' => 'node',
-                  'save' => TRUE,
-                ),
-              ),
-              'module' => 'Node',
-            ),
           ),
         ),
         '#version' => 6003,

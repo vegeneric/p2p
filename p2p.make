@@ -21,6 +21,8 @@ projects[date][subdir] = "contrib/date"
 
 projects[diff][subdir] = "contrib"
 
+projects[auto_nodetitle][subdir] = "contrib"
+
 projects[features][subdir] = "contrib"
 
 projects[flag][subdir] = "contrib"

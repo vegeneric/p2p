@@ -82,6 +82,11 @@ function person_to_person_install() {
   variable_set('node_options_offer', array(0 => 'status', 1 => 'revision'));
   variable_set('node_options_experience', array());
   
+  // Configure auto_nodetitle for offer node type
+  variable_set('ant_offer', 1);
+  variable_set('ant_pattern_offer', 'Offer for [field_guest-title]');
+  variable_set('ant_php_offer', 0); 
+  
   // Check if a vocab named 'Interests' exists, if so, set our variable & connect to hosts and guests
   if (!$int_vid = db_result(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Interests'"))) {
     db_query("INSERT INTO {vocabulary} (name, relations, hierarchy, multiple, required, module) VALUES ('Interests', 1, 1, 1, 1, 'person_to_person')");

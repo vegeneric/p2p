@@ -1719,17 +1719,18 @@ Other',
     'field_name' => 'field_confirm_admin',
     'type_name' => 'offer',
     'display_settings' => array(
+      'weight' => '7',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
-        'exclude' => 0,
+        'format' => 'hidden',
       ),
       'teaser' => array(
         'format' => 'default',
-        'exclude' => 0,
+        'exclude' => 1,
       ),
       'full' => array(
         'format' => 'default',
-        'exclude' => 0,
+        'exclude' => 1,
       ),
       '4' => array(
         'format' => 'default',
@@ -1771,17 +1772,18 @@ Other',
     'field_name' => 'field_confirm_guest',
     'type_name' => 'offer',
     'display_settings' => array(
+      'weight' => '5',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
-        'exclude' => 0,
+        'format' => 'hidden',
       ),
       'teaser' => array(
         'format' => 'default',
-        'exclude' => 0,
+        'exclude' => 1,
       ),
       'full' => array(
         'format' => 'default',
-        'exclude' => 0,
+        'exclude' => 1,
       ),
       '4' => array(
         'format' => 'default',
@@ -1823,17 +1825,18 @@ Other',
     'field_name' => 'field_confirm_host',
     'type_name' => 'offer',
     'display_settings' => array(
+      'weight' => '6',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
-        'exclude' => 0,
+        'format' => 'hidden',
       ),
       'teaser' => array(
         'format' => 'default',
-        'exclude' => 0,
+        'exclude' => 1,
       ),
       'full' => array(
         'format' => 'default',
-        'exclude' => 0,
+        'exclude' => 1,
       ),
       '4' => array(
         'format' => 'default',
@@ -1875,9 +1878,10 @@ Other',
     'field_name' => 'field_guest',
     'type_name' => 'offer',
     'display_settings' => array(
+      'weight' => '3',
+      'parent' => '',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',
@@ -1944,9 +1948,10 @@ Other',
     'field_name' => 'field_host',
     'type_name' => 'offer',
     'display_settings' => array(
+      'weight' => '4',
+      'parent' => '',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',
@@ -2004,9 +2009,10 @@ Other',
     'field_name' => 'field_visit_dates',
     'type_name' => 'offer',
     'display_settings' => array(
+      'weight' => '2',
+      'parent' => '',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',

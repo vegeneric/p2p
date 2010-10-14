@@ -90,27 +90,39 @@ function person_to_person_form_offer_node_form_alter(&$form, &$form_state) {
 }
 
 /**
+ * Implementation of hook_form_FORM_ID_alter
  * Custom validation for the offer node form
  */
 function person_to_person_offer_validate(&$form, &$form_state) {
-  dsm($form);
-  dsm($form_state);  
+  //dsm($form);
+  //dsm($form_state);  
   // If existing node, 
   if ($nid = $form['nid']['#value']) {
     
     //Remove erroneous field_host values
     unset($form_state['values']['field_host']['nid']);
+  }
+}
+
+/**
+ * Implementation of hook_nodeapi
+ */
+function person_to_person_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  switch ($op) {
     
-    // Feed in proper confirmation checkbox values
-    if ($form['#node']->field_confirm_host[0]['value'] = 1) {
-      $form_state['values']['field_confirm_host'] = array(0 => array('value' => 1));
-    }
-    if ($form['#node']->field_confirm_guest[0]['value'] = 1) {
-      $form_state['values']['field_confirm_guest'] = array(0 => array('value' => 1));
-    }
-    if ($form['#node']->field_confirm_all[0]['value'] = 1) {
-      $form_state['values']['field_confirm_all'] = array(0 => array('value' => 1));
-    }
+    case 'presave':
+      // Rules will automatically create experience nodes for us on an offer's completion.
+      // Rules will also feed in the guest as the experience node's author.
+      // From that uid, find the offer node and fill in guest / host / date values.
+      if ($node->type == 'experience') {
+        $guest_nid = db_result(db_query("SELECT nid FROM {node} WHERE type = 'guest' AND uid = %d", $node->uid));
+        $offer_node = node_load(db_result(db_query("SELECT n.nid FROM {node} n INNER JOIN {content_field_guest} g ON n.vid = g.vid WHERE n.type = 'offer' AND g.field_guest_nid = %d", $guest_nid)));
+        $node->field_guest = $offer_node->field_guest;
+        $node->field_host = $offer_node->field_host;
+        $node->field_visit_dates = $offer_node->field_visit_dates;
+        $node->title = str_replace('Offer', 'Experience', $offer_node->title);
+      }
+      break;
   }
 }
 
@@ -151,7 +163,8 @@ function person_to_person_offer_after_build($form, &$form_state) {
     // If host is confirmed, we need to disable the checkbox AND the host nodereference field
     if ($form['field_confirm_host']['#default_value'][0]['value'] == 1) {
       
-      // Disable confirm host checkbox
+      // Set value and disable confirm host checkbox
+      $form['field_confirm_host']['value']['#value'] = array(0 => 1);
       $form['field_confirm_host']['value']['#attributes']['disabled'] = 'disabled';
       $host_nid = $form['field_host']['#value'][0]['nid'];
       $host_node = node_load($host_nid);
@@ -170,17 +183,19 @@ function person_to_person_offer_after_build($form, &$form_state) {
                     '. $host_node->title .'</div>');
     }
     
-    // If guest is confirmed, disable checkbox
+    // If guest is confirmed, set value and disable checkbox
     if ($form['field_confirm_guest']['#default_value'][0]['value'] == 1) {
+      $form['field_confirm_guest']['value']['#value'] = array(0 => 1);
       $form['field_confirm_guest']['value']['#attributes']['disabled'] = 'disabled';
     }
     
-    // If admin is confirmed, disable checkbox
+    // If admin is confirmed, set value and disable checkbox
     if ($form['field_confirm_admin']['#default_value'][0]['value'] == 1) {
-      $form['field_confirm_all']['value']['#attributes']['disabled'] = 'disabled';
+      //$form['field_confirm_admin']['value']['#value'] = array('value' => 1);
+      //$form['field_confirm_admin']['value']['#attributes']['disabled'] = 'disabled';
     }
   }
-  dsm($form);
+  //dsm($form);
   return $form;
 }
 
@@ -228,21 +243,26 @@ function _person_to_person_find_hosts_for_guest($account, $node, $flag = FALSE) 
   $return = FALSE;
   $matches = array();
   $hosts = array();
-  dsm($account);
-  dsm($node);
+  //dsm($account);
+  //dsm($node);
   $isl_vid = variable_get('person_to_person_island_vocab');
   $int_vid = variable_get('person_to_person_int_vocab');
   $isl_all_tid = db_result(db_query("SELECT tid FROM {term_data} WHERE vid = %d AND name = '%s'", $isl_vid, 'All / Not sure'));
   $ints_guest = $node->taxonomy[$int_vid];
 
+  //If a particular island was entered by the guest, only find hosts on that island
   if ($node->taxonomy[$isl_vid] != $isl_all_tid) {
     $sql = db_query("SELECT DISTINCT n.nid, n.uid, u.name FROM {node} n INNER JOIN {users} u ON n.uid = u.uid INNER JOIN {term_node} tn ON n.nid = tn.nid WHERE n.type = 'host' AND n.status = 1 AND tn.tid = %d", $node->taxonomy[$isl_vid]);
+  
+  // Otherwise find all active hosts
   } else {
     $sql = db_query("SELECT n.nid, n.uid, u.name FROM {node} n INNER JOIN {users} u ON n.uid = u.uid WHERE n.type = 'host' AND n.status = 1");
   }
   while ($data = db_fetch_object($sql)) {
     $hosts[$data->uid] = $data->nid;
   }
+  
+  // Cycle through hosts and build an array of common interests
   foreach ($hosts AS $host_uid => $host_nid) {
     $host_node = node_load($host_nid);
     $ints_host = $host_node->taxonomy[$int_vid];
@@ -252,6 +272,8 @@ function _person_to_person_find_hosts_for_guest($account, $node, $flag = FALSE) 
       $matches[$host_nid] = $common_interests_count; 
     }
   }
+  
+  // If we found common interests, flag the host on behalf of the guest
   if (count($matches) > 0) {
     $return = TRUE;
     if ($flag = TRUE) {
