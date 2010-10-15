@@ -302,7 +302,7 @@ function person_to_person_views_default_views() {
       'label' => 'flag',
       'required' => 1,
       'flag' => 'potential_host',
-      'user_scope' => 'current',
+      'user_scope' => 'any',
       'id' => 'flag_content_rel',
       'table' => 'node',
       'field' => 'flag_content_rel',

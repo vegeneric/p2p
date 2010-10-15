@@ -85,7 +85,9 @@ function person_to_person_user_default_permissions() {
   // Exported permission: edit any experience content
   $permissions['edit any experience content'] = array(
     'name' => 'edit any experience content',
-    'roles' => array(),
+    'roles' => array(
+      '0' => 'p2p admin',
+    ),
   );
 
   // Exported permission: edit any guest content
@@ -107,7 +109,9 @@ function person_to_person_user_default_permissions() {
   // Exported permission: edit any offer content
   $permissions['edit any offer content'] = array(
     'name' => 'edit any offer content',
-    'roles' => array(),
+    'roles' => array(
+      '0' => 'p2p admin',
+    ),
   );
 
   // Exported permission: edit field_address1
@@ -257,7 +261,8 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_confirm_guest'] = array(
     'name' => 'edit field_confirm_guest',
     'roles' => array(
-      '0' => 'p2p admin',
+      '0' => 'guest',
+      '1' => 'p2p admin',
     ),
   );
 
@@ -265,7 +270,8 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_confirm_host'] = array(
     'name' => 'edit field_confirm_host',
     'roles' => array(
-      '0' => 'p2p admin',
+      '0' => 'host',
+      '1' => 'p2p admin',
     ),
   );
 
@@ -321,7 +327,8 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_host'] = array(
     'name' => 'edit field_host',
     'roles' => array(
-      '0' => 'p2p admin',
+      '0' => 'guest',
+      '1' => 'p2p admin',
     ),
   );
 
@@ -392,7 +399,9 @@ function person_to_person_user_default_permissions() {
   // Exported permission: edit own experience content
   $permissions['edit own experience content'] = array(
     'name' => 'edit own experience content',
-    'roles' => array(),
+    'roles' => array(
+      '0' => 'guest',
+    ),
   );
 
   // Exported permission: edit own guest content
@@ -414,7 +423,9 @@ function person_to_person_user_default_permissions() {
   // Exported permission: edit own offer content
   $permissions['edit own offer content'] = array(
     'name' => 'edit own offer content',
-    'roles' => array(),
+    'roles' => array(
+      '0' => 'guest',
+    ),
   );
 
   // Exported permission: view field_address1
