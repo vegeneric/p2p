@@ -16,8 +16,10 @@ function person_to_person_user_default_permissions() {
   $permissions['create guest content'] = array(
     'name' => 'create guest content',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'authenticated user',
+      '2' => 'guest',
+      '3' => 'p2p admin',
     ),
   );
 
@@ -61,6 +63,12 @@ function person_to_person_user_default_permissions() {
   // Exported permission: delete any offer content
   $permissions['delete any offer content'] = array(
     'name' => 'delete any offer content',
+    'roles' => array(),
+  );
+
+  // Exported permission: delete own experience content
+  $permissions['delete own experience content'] = array(
+    'name' => 'delete own experience content',
     'roles' => array(),
   );
 
@@ -118,8 +126,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_address1'] = array(
     'name' => 'edit field_address1',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -127,8 +136,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_address2'] = array(
     'name' => 'edit field_address2',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -136,8 +146,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_adults'] = array(
     'name' => 'edit field_adults',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -145,8 +156,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_adults_ages'] = array(
     'name' => 'edit field_adults_ages',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -154,8 +166,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_age'] = array(
     'name' => 'edit field_age',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -163,8 +176,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_anniversary'] = array(
     'name' => 'edit field_anniversary',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -172,8 +186,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_bahamas_address1'] = array(
     'name' => 'edit field_bahamas_address1',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -181,8 +196,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_bahamas_address2'] = array(
     'name' => 'edit field_bahamas_address2',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -190,8 +206,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_bahamas_hotel'] = array(
     'name' => 'edit field_bahamas_hotel',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -199,8 +216,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_bahamas_room'] = array(
     'name' => 'edit field_bahamas_room',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -208,8 +226,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_birthday'] = array(
     'name' => 'edit field_birthday',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -217,8 +236,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_children'] = array(
     'name' => 'edit field_children',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -226,8 +246,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_children_ages'] = array(
     'name' => 'edit field_children_ages',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -235,8 +256,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_city'] = array(
     'name' => 'edit field_city',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -244,8 +266,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_club_affiliations'] = array(
     'name' => 'edit field_club_affiliations',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -279,7 +302,8 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_country'] = array(
     'name' => 'edit field_country',
     'roles' => array(
-      '0' => 'guest',
+      '0' => 'anonymous user',
+      '1' => 'guest',
     ),
   );
 
@@ -287,7 +311,8 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_group'] = array(
     'name' => 'edit field_group',
     'roles' => array(
-      '0' => 'guest',
+      '0' => 'anonymous user',
+      '1' => 'guest',
     ),
   );
 
@@ -295,7 +320,8 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_guest'] = array(
     'name' => 'edit field_guest',
     'roles' => array(
-      '0' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'p2p admin',
     ),
   );
 
@@ -303,7 +329,8 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_hobbies'] = array(
     'name' => 'edit field_hobbies',
     'roles' => array(
-      '0' => 'guest',
+      '0' => 'anonymous user',
+      '1' => 'guest',
     ),
   );
 
@@ -311,7 +338,8 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_hobbies_other'] = array(
     'name' => 'edit field_hobbies_other',
     'roles' => array(
-      '0' => 'guest',
+      '0' => 'anonymous user',
+      '1' => 'guest',
     ),
   );
 
@@ -319,7 +347,8 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_home_phone'] = array(
     'name' => 'edit field_home_phone',
     'roles' => array(
-      '0' => 'guest',
+      '0' => 'anonymous user',
+      '1' => 'guest',
     ),
   );
 
@@ -327,8 +356,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_host'] = array(
     'name' => 'edit field_host',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -336,8 +366,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_occupation'] = array(
     'name' => 'edit field_occupation',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -345,8 +376,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_occupation_other'] = array(
     'name' => 'edit field_occupation_other',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -354,9 +386,10 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_pics'] = array(
     'name' => 'edit field_pics',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'host',
-      '2' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'host',
+      '3' => 'p2p admin',
     ),
   );
 
@@ -364,8 +397,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_state'] = array(
     'name' => 'edit field_state',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -373,8 +407,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_visit_dates'] = array(
     'name' => 'edit field_visit_dates',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -382,8 +417,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_work_phone'] = array(
     'name' => 'edit field_work_phone',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 
@@ -391,8 +427,9 @@ function person_to_person_user_default_permissions() {
   $permissions['edit field_zip'] = array(
     'name' => 'edit field_zip',
     'roles' => array(
-      '0' => 'guest',
-      '1' => 'p2p admin',
+      '0' => 'anonymous user',
+      '1' => 'guest',
+      '2' => 'p2p admin',
     ),
   );
 

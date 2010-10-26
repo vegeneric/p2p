@@ -42,7 +42,7 @@ $flags[] = array (
   'module' => 'person_to_person',
   'locked' => 
   array (
-    'name' => 'name',
+    0 => 'name',
   ),
   'api_version' => 2,
 );
