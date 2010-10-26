@@ -64,9 +64,15 @@ function person_to_person_install() {
   // Configre auto assign role for hosts & guests
   if ($guest_rid = db_result(db_query("SELECT rid FROM {role} WHERE name = 'guest'"))) {
     db_query("INSERT INTO {autoassignrole_page} (rid, display, path, menu, format) VALUES (%d, 2, 'user/register/guest', 'features', 1)", $guest_rid);
+  	if (module_exists('better_formats')) {
+  		better_formats_create_role($guest_rid);
+  	}
   }
   if ($host_rid = db_result(db_query("SELECT rid FROM {role} WHERE name = 'host'"))) {
     db_query("INSERT INTO {autoassignrole_page} (rid, display, path, menu, format) VALUES (%d, 2, 'user/register/host', 'features', 1)", $host_rid);
+    if (module_exists('better_formats')) {
+  		better_formats_create_role($host_rid);
+  	}
   }
   
   // Configure content profiles for hosts & guests

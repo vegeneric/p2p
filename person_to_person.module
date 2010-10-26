@@ -154,12 +154,23 @@ function person_to_person_flag($action, $flag, $content_id, $account) {
 }
 
 /**
+ *
+ */
+function person_to_person_form_user_register_alter(&$form, &$form_state) {
+	dsm($form);
+}
+
+/**
  * Custom form alterations for the offer node form
  * - On creation form, make sure default dates line up with the requested dates of the guest's node.
  * - On creation form, make sure author is set as guest.
  */
 function person_to_person_form_offer_node_form_alter(&$form, &$form_state) {
 
+    //$guest_nid = arg(3);
+    //$node = node_load($guest_nid);
+    //dsm($node);
+	
   // Our date fields are cck, so we use after_build to have access.
   $form['#after_build'][] = 'person_to_person_offer_after_build';
   
@@ -168,6 +179,7 @@ function person_to_person_form_offer_node_form_alter(&$form, &$form_state) {
   
   // Reverse validation order so we're called first
   $form['#validate'] = array_reverse($form['#validate']);
+  //dsm($form);
 }
 
 /**
@@ -240,14 +252,16 @@ function person_to_person_offer_after_build($form, &$form_state) {
     
     // Switch island to guest node's
     $isl_vid = variable_get('person_to_person_island_vocab', 0);
+    //dsm($isl_vid);
     $isl_tids = array();
     foreach ($node->taxonomy AS $term) {
-      
-      if ($term->vid = $isl_vid) {
-        $isl_tids[$term->tid] = $term->tid;
+          if ($term->vid == $isl_vid) {
+        $isl_tids[] = $term->tid;
       }
     }
-    $form['taxonomy'][$isl_vid]['#value'] = $isl_tids;
+    
+		$form['taxonomy'][$isl_vid]['#value'] = $isl_tids;
+    
     // Format our depart date from the guest node
     $depart_array = explode('T', $node->field_visit_dates[0]['value']);
     $depart_date_array = explode('-', $depart_array[0]);
