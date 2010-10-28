@@ -228,7 +228,7 @@ function person_to_person_offer_validate(&$form, &$form_state) {
   
   // Make sure at least one host is being offered
   if (!$form_state['values']['field_host'][0]['nid']) {
-    form_set_error('field_host', 'At least one host must be offered.');
+    //form_set_error('field_host', 'At least one host must be offered.');
   }
   
   // Never allow guest confirmation without guest confirmation
@@ -283,12 +283,18 @@ function person_to_person_offer_after_build($form, &$form_state) {
     
   } elseif (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == 'edit') {
     
-    // If host is confirmed, we need to disable the checkbox AND the host nodereference field
+  	$guest_confirm = $form['field_confirm_guest']['#default_value'][0]['value'];
+    
+  	// If host is confirmed
     if ($form['field_confirm_host']['#default_value'][0]['value'] == 1) {
       
-      // Set value and disable confirm host checkbox
-      $form['field_confirm_host']['value']['#value'] = array(0 => 1);
-      $form['field_confirm_host']['value']['#attributes']['disabled'] = 'disabled';
+      // If guest confirmed too, set host confirm value and disable checkbox
+    	if ($guest_confirm) {
+    	
+      	$form['field_confirm_host']['value']['#value'] = array(0 => 1);
+      	$form['field_confirm_host']['value']['#attributes']['disabled'] = 'disabled';
+      
+    	}
       $host_nid = $form['field_host']['#value'][0]['nid'];
       $host_node = node_load($host_nid);
       
@@ -313,13 +319,12 @@ function person_to_person_offer_after_build($form, &$form_state) {
       $guest_first_view = TRUE;
     }
     // If guest is confirmed, set value and disable checkbox
-    $guest_confirm = $form['field_confirm_guest']['#default_value'][0]['value'];
     if ($guest_confirm) {
       $form['field_confirm_guest']['value']['#value'] = array(0 => 1);
       $form['field_confirm_guest']['value']['#attributes']['disabled'] = 'disabled';
     }
     // If it's the guest's first view, add custom description to host field
-    if ($guest_first_view) {
+    if ($guest_first_view && isset($node->field_host[1]['nid'])) {
       $form['field_host']['nid']['nid']['#description'] = t('Select the one (1) potential host that you think is the best match. We will determine their confirm their availability and get back to you.');
       $form['field_confirm_guest']['value']['#attributes']['disabled'] = 'disabled';
     }
@@ -330,7 +335,7 @@ function person_to_person_offer_after_build($form, &$form_state) {
       //$form['field_confirm_admin']['value']['#attributes']['disabled'] = 'disabled';
     }
   }
-  //dsm($form);
+  dsm($form);
   return $form;
 }
 
